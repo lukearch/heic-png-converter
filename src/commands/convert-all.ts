@@ -3,16 +3,23 @@ import { readdirSync, readFile, writeFile } from 'fs-extra';
 import { unlink } from 'fs/promises';
 import * as heicConvert from 'heic-convert';
 import { resolve } from 'path';
-import { blue } from 'picocolors';
+import { blue, red } from 'picocolors';
 
 type ConvertAllArgs = {
   delete?: boolean;
+  quality: number;
 };
 
 const convertAllCommand = new Command('convert-all')
   .description('Convert all .heic files in the current directory to .png')
-  .option('--delete', 'Delete the original .heic files after conversion')
+  .option('-D, --delete', 'Delete the original .heic files after conversion')
+  .option('-q, --quality <quality>', 'Quality of the output image', '1')
   .action(async (args: ConvertAllArgs) => {
+    if (!Number(args.quality)) {
+      console.log(red('Quality must be a number.'));
+      return;
+    }
+
     const root = resolve(process.cwd());
     process.chdir(root);
 
@@ -31,7 +38,7 @@ const convertAllCommand = new Command('convert-all')
       const outputBuffer = await heicConvert({
         buffer: inputBuffer,
         format: 'PNG',
-        quality: 1,
+        quality: Number(args.quality),
       });
 
       const newPNGFile = file.replace('.heic', '.png');
