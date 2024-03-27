@@ -14,11 +14,11 @@ const convertAllCommand = new Command('convert-all')
       {
         type: 'number',
         name: 'quality',
-        message: 'Enter the quality of the converted images (0.6 - 0.8)',
+        message: 'Enter the quality of the converted images (0...1):',
         initial: 1,
+        float: true,
         min: 0,
         max: 1,
-        suggest: (input) => (input < 0.6 ? 0.6 : input > 0.8 ? 0.8 : input),
       },
       {
         type: 'confirm',
@@ -36,6 +36,11 @@ const convertAllCommand = new Command('convert-all')
 
     if (!answers.confirm) {
       console.log(blue('\nAborted.'));
+      return;
+    }
+
+    if (answers.quality < 0 || answers.quality > 1) {
+      console.log(blue('Quality must be between 0 and 1.'));
       return;
     }
 
