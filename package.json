@@ -1,6 +1,13 @@
 {
   "name": "@lukearch/heic-png-converter",
   "version": "1.0.0",
+  "description": "Convert HEIC images to PNG",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
   "bin": {
     "heic2png": "./dist/index.js"
   },
@@ -18,7 +25,10 @@
     "url": "https://github.com/lukearch/heic-png-converter.git"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/fs-extra": "^11.0.4",
     "@types/heic-convert": "^1.2.3",
+    "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "eslint-config-prettier": "^9.1.0",
@@ -27,7 +37,10 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
-    "heic-convert": "^2.1.0"
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "heic-convert": "^2.1.0",
+    "picocolors": "^1.0.0"
   },
   "scripts": {
     "build": "tsc",
