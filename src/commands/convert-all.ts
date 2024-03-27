@@ -2,11 +2,11 @@ import { Command } from 'commander';
 import { readdirSync, readFile, writeFile } from 'fs-extra';
 import { unlink } from 'fs/promises';
 import * as heicConvert from 'heic-convert';
-import imagemin from 'imagemin';
-import imageminPngquant from 'imagemin-pngquant';
+import * as imagemin from 'imagemin';
+import * as imageminPngquant from 'imagemin-pngquant';
 import { resolve } from 'path';
 import { blue } from 'picocolors';
-import prompts = require('prompts');
+import * as prompts from 'prompts';
 
 const convertAllCommand = new Command('convert-all')
   .description('Convert all .heic files in the current directory to .png')
@@ -65,10 +65,10 @@ const convertAllCommand = new Command('convert-all')
 
       await writeFile(resolve(root, newPNGFile), Buffer.from(outputBuffer));
 
-      await imagemin([resolve(root, newPNGFile)], {
+      await imagemin.default([resolve(root, newPNGFile)], {
         destination: root,
         plugins: [
-          imageminPngquant({
+          imageminPngquant.default({
             quality: [answers.quality, 1],
           }),
         ],
