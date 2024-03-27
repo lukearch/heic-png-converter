@@ -2,21 +2,41 @@ import { Command } from 'commander';
 import { readdirSync, readFile, writeFile } from 'fs-extra';
 import { unlink } from 'fs/promises';
 import * as heicConvert from 'heic-convert';
+import imagemin from 'imagemin';
+import imageminPngquant from 'imagemin-pngquant';
 import { resolve } from 'path';
-import { blue, red } from 'picocolors';
-
-type ConvertAllArgs = {
-  delete?: boolean;
-  quality: number;
-};
+import { blue } from 'picocolors';
+import prompts = require('prompts');
 
 const convertAllCommand = new Command('convert-all')
   .description('Convert all .heic files in the current directory to .png')
-  .option('-D, --delete', 'Delete the original .heic files after conversion')
-  .option('-q, --quality <quality>', 'Quality of the output image', '1')
-  .action(async (args: ConvertAllArgs) => {
-    if (!Number(args.quality)) {
-      console.log(red('Quality must be a number.'));
+  .action(async () => {
+    const answers = await prompts([
+      {
+        type: 'number',
+        name: 'quality',
+        message: 'Enter the quality of the converted images (0.6 - 0.8)',
+        initial: 1,
+        min: 0,
+        max: 1,
+        suggest: (input) => (input < 0.6 ? 0.6 : input > 0.8 ? 0.8 : input),
+      },
+      {
+        type: 'confirm',
+        name: 'delete',
+        message: 'Delete the original .heic files after conversion?',
+        initial: false,
+      },
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Do you want to proceed?',
+        initial: true,
+      },
+    ]);
+
+    if (!answers.confirm) {
+      console.log(blue('\nAborted.'));
       return;
     }
 
@@ -38,14 +58,23 @@ const convertAllCommand = new Command('convert-all')
       const outputBuffer = await heicConvert({
         buffer: inputBuffer,
         format: 'PNG',
-        quality: Number(args.quality),
+        quality: 1,
       });
 
       const newPNGFile = file.replace('.heic', '.png');
 
       await writeFile(resolve(root, newPNGFile), Buffer.from(outputBuffer));
 
-      if (args.delete) {
+      await imagemin([resolve(root, newPNGFile)], {
+        destination: root,
+        plugins: [
+          imageminPngquant({
+            quality: [answers.quality, 1],
+          }),
+        ],
+      });
+
+      if (answers.delete) {
         await unlink(resolve(root, file));
       }
     }
