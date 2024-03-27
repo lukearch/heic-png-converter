@@ -1,9 +1,22 @@
 {
-  "name": "heic-png-converter",
+  "name": "@lukearch/heic-png-converter",
   "version": "1.0.0",
-  "main": "index.js",
+  "bin": {
+    "heic2png": "./dist/index.js"
+  },
+  "author": {
+    "email": "lukearch@proton.me",
+    "name": "Lucas Larangeira",
+    "url": "https://lucaslarangeira.com"
+  },
   "license": "MIT",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukearch/heic-png-converter.git"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
