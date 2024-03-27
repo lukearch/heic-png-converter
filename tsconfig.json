@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "strict": true,
+    "skipLibCheck": false,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "useUnknownInCatchVariables": false
+  },
+  "exclude": ["dist"],
+  "include": ["src/**/*"],
+  "references": []
+}
