@@ -1,11 +1,11 @@
 import { Command } from 'commander';
-import { readdirSync, readFile, writeFile } from 'fs-extra';
+import { readdirSync, readFile } from 'fs-extra';
 import { unlink } from 'fs/promises';
 import * as heicConvert from 'heic-convert';
-import imageminPngquant from 'imagemin-pngquant';
 import { resolve } from 'path';
 import { blue } from 'picocolors';
 import * as prompts from 'prompts';
+import sharp = require('sharp');
 
 const convertAllCommand = new Command('convert-all')
   .description('Convert all .heic files in the current directory to .png')
@@ -14,11 +14,10 @@ const convertAllCommand = new Command('convert-all')
       {
         type: 'number',
         name: 'quality',
-        message: 'Enter the quality of the converted images (0...1):',
-        initial: 1,
-        float: true,
+        message: 'Enter the quality of the converted images (0-100)',
+        initial: 100,
         min: 0,
-        max: 1,
+        max: 100,
       },
       {
         type: 'confirm',
@@ -36,11 +35,6 @@ const convertAllCommand = new Command('convert-all')
 
     if (!answers.confirm) {
       console.log(blue('\nAborted.'));
-      return;
-    }
-
-    if (answers.quality < 0 || answers.quality > 1) {
-      console.log(blue('Quality must be between 0 and 1.'));
       return;
     }
 
@@ -67,17 +61,9 @@ const convertAllCommand = new Command('convert-all')
 
       const newPNGFile = file.replace('.heic', '.png');
 
-      await writeFile(resolve(root, newPNGFile), Buffer.from(outputBuffer));
-
-      const imagemin = await import('imagemin');
-      await imagemin.default([resolve(root, newPNGFile)], {
-        destination: root,
-        plugins: [
-          imageminPngquant({
-            quality: [0.6, 0.8], // Set the quality
-          }),
-        ],
-      });
+      await sharp(outputBuffer)
+        .png({ quality: 80 })
+        .toFile(resolve(root, newPNGFile));
 
       if (answers.delete) {
         await unlink(resolve(root, file));
