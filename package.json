@@ -28,5 +28,11 @@
   },
   "dependencies": {
     "heic-convert": "^2.1.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "start": "ts-node src/index.ts",
+    "format": "prettier --write ."
   }
 }
