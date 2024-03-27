@@ -2,8 +2,7 @@ import { Command } from 'commander';
 import { readdirSync, readFile, writeFile } from 'fs-extra';
 import { unlink } from 'fs/promises';
 import * as heicConvert from 'heic-convert';
-import * as imagemin from 'imagemin';
-import * as imageminPngquant from 'imagemin-pngquant';
+import imageminPngquant from 'imagemin-pngquant';
 import { resolve } from 'path';
 import { blue } from 'picocolors';
 import * as prompts from 'prompts';
@@ -65,11 +64,12 @@ const convertAllCommand = new Command('convert-all')
 
       await writeFile(resolve(root, newPNGFile), Buffer.from(outputBuffer));
 
+      const imagemin = await import('imagemin');
       await imagemin.default([resolve(root, newPNGFile)], {
         destination: root,
         plugins: [
-          imageminPngquant.default({
-            quality: [answers.quality, 1],
+          imageminPngquant({
+            quality: [0.6, 0.8], // Set the quality
           }),
         ],
       });
