@@ -1,12 +1,18 @@
 import { Command } from 'commander';
 import { readdirSync, readFile, writeFile } from 'fs-extra';
+import { unlink } from 'fs/promises';
 import * as heicConvert from 'heic-convert';
 import { resolve } from 'path';
 import { blue } from 'picocolors';
 
+type ConvertAllArgs = {
+  delete?: boolean;
+};
+
 const convertAllCommand = new Command('convert-all')
   .description('Convert all .heic files in the current directory to .png')
-  .action(async () => {
+  .option('--delete', 'Delete the original .heic files after conversion')
+  .action(async (args: ConvertAllArgs) => {
     const root = resolve(process.cwd());
     process.chdir(root);
 
@@ -31,6 +37,10 @@ const convertAllCommand = new Command('convert-all')
       const newPNGFile = file.replace('.heic', '.png');
 
       await writeFile(resolve(root, newPNGFile), Buffer.from(outputBuffer));
+
+      if (args.delete) {
+        await unlink(resolve(root, file));
+      }
     }
 
     console.log(blue('\nConversion complete!'));
